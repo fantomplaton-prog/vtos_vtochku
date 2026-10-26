@@ -1,0 +1,16 @@
+[project]
+name = "logic-prosthetic"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "bleak>=3.0.2",
+    "click>=8.5.0",
+    "ipywidgets>=8.1.9",
+    "matplotlib>=3.11.2",
+    "numpy>=2.4.6",
+    "pandas>=3.1.0",
+    "pyserial>=3.5",
+    "tqdm>=4.70.1",
+]

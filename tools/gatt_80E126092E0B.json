@@ -1,0 +1,605 @@
+{
+  "address": "80:E1:26:09:2E:0B",
+  "services": [
+    {
+      "uuid": "00001801-0000-1000-8000-00805f9b34fb",
+      "description": "Generic Attribute Profile",
+      "chars": [
+        {
+          "uuid": "00002a05-0000-1000-8000-00805f9b34fb",
+          "handle": 2,
+          "props": [
+            "indicate"
+          ],
+          "description": "Service Changed",
+          "value": null,
+          "descriptors": [
+            {
+              "uuid": "00002902-0000-1000-8000-00805f9b34fb",
+              "value": "0200"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "00001800-0000-1000-8000-00805f9b34fb",
+      "description": "Generic Access Profile",
+      "chars": [
+        {
+          "uuid": "00002a00-0000-1000-8000-00805f9b34fb",
+          "handle": 6,
+          "props": [
+            "read",
+            "write"
+          ],
+          "description": "Device Name",
+          "value": "494e4459",
+          "descriptors": []
+        },
+        {
+          "uuid": "00002a01-0000-1000-8000-00805f9b34fb",
+          "handle": 8,
+          "props": [
+            "read"
+          ],
+          "description": "Appearance",
+          "value": "4003",
+          "descriptors": []
+        },
+        {
+          "uuid": "00002a04-0000-1000-8000-00805f9b34fb",
+          "handle": 10,
+          "props": [
+            "read"
+          ],
+          "description": "Peripheral Preferred Connection Parameters",
+          "value": "ffffffff0000ffff",
+          "descriptors": []
+        }
+      ]
+    },
+    {
+      "uuid": "0000180a-0000-1000-8000-00805f9b34fb",
+      "description": "Device Information",
+      "chars": [
+        {
+          "uuid": "00002a29-0000-1000-8000-00805f9b34fb",
+          "handle": 13,
+          "props": [
+            "read"
+          ],
+          "description": "Manufacturer Name String",
+          "value": "53544d00",
+          "descriptors": []
+        }
+      ]
+    },
+    {
+      "uuid": "0000180d-0000-1000-8000-00805f9b34fb",
+      "description": "Heart Rate",
+      "chars": [
+        {
+          "uuid": "00002a37-0000-1000-8000-00805f9b34fb",
+          "handle": 16,
+          "props": [
+            "notify"
+          ],
+          "description": "Heart Rate Measurement",
+          "value": null,
+          "descriptors": [
+            {
+              "uuid": "00002902-0000-1000-8000-00805f9b34fb",
+              "value": "0000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "0000fe40-cc7a-482a-984a-7f2ed5b3e58f",
+      "description": "Inugo Systems Limited",
+      "chars": [
+        {
+          "uuid": "0000fe42-8e22-4541-9d4c-21edae82ed19",
+          "handle": 20,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Nets A/S",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe43-8e22-4541-9d4c-21edae82ed19",
+          "handle": 22,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Andreas Stihl AG & Co. KG",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe44-8e22-4541-9d4c-21edae82ed19",
+          "handle": 24,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "SK Telecom",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe45-8e22-4541-9d4c-21edae82ed19",
+          "handle": 26,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Snapchat Inc",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe46-8e22-4541-9d4c-21edae82ed19",
+          "handle": 28,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "B&O Play A/S",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe47-8e22-4541-9d4c-21edae82ed19",
+          "handle": 30,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "General Motors",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe48-8e22-4541-9d4c-21edae82ed19",
+          "handle": 32,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "General Motors",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe49-8e22-4541-9d4c-21edae82ed19",
+          "handle": 34,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "SenionLab AB",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe4a-8e22-4541-9d4c-21edae82ed19",
+          "handle": 36,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "OMRON HEALTHCARE Co.: Ltd.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe4b-8e22-4541-9d4c-21edae82ed19",
+          "handle": 38,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Koninklijke Philips N.V.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe4c-8e22-4541-9d4c-21edae82ed19",
+          "handle": 40,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Volkswagen AG",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe4d-8e22-4541-9d4c-21edae82ed19",
+          "handle": 42,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Casambi Technologies Oy",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe4e-8e22-4541-9d4c-21edae82ed19",
+          "handle": 44,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "NTT docomo",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe4f-8e22-4541-9d4c-21edae82ed19",
+          "handle": 46,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Molekule: Inc.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe50-8e22-4541-9d4c-21edae82ed19",
+          "handle": 48,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Google Inc.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe51-8e22-4541-9d4c-21edae82ed19",
+          "handle": 50,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "SRAM",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe52-8e22-4541-9d4c-21edae82ed19",
+          "handle": 52,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "SetPoint Medical",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe53-8e22-4541-9d4c-21edae82ed19",
+          "handle": 54,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "3M",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe54-8e22-4541-9d4c-21edae82ed19",
+          "handle": 56,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Motiv: Inc.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe55-8e22-4541-9d4c-21edae82ed19",
+          "handle": 58,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Google Inc.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe56-8e22-4541-9d4c-21edae82ed19",
+          "handle": 60,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Google Inc.",
+          "value": null,
+          "descriptors": []
+        },
+        {
+          "uuid": "0000fe57-8e22-4541-9d4c-21edae82ed19",
+          "handle": 62,
+          "props": [
+            "write-without-response",
+            "write"
+          ],
+          "description": "Dotted Labs",
+          "value": null,
+          "descriptors": []
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "t": 1792399572.4770682,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399572.692608,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399572.8889124,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399573.082729,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399573.2793386,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399573.5787559,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399573.6984935,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399573.9988146,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399574.0556605,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399574.3573847,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399574.4788725,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399574.6544743,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399574.8988311,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399575.135455,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399575.2493973,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399575.4988716,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399575.6756582,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399575.8592327,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399576.039365,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399576.2708719,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399576.4575179,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399576.699173,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399576.8698807,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399577.0581717,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399577.2363992,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399577.414919,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399577.7188637,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399577.8381658,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399578.0190418,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399578.198864,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399578.4389274,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399578.6789289,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399578.7987545,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399579.037451,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399579.2189875,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399579.3977613,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399579.5745993,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399579.8700044,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399579.9967818,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399580.1780632,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399580.3556495,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399580.5971181,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399580.895081,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399580.9556713,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399581.1985605,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399581.3779945,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399581.5556607,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399581.735452,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399581.9721546,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399582.215663,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    },
+    {
+      "t": 1792399582.3354554,
+      "char": "00002a37-0000-1000-8000-00805f9b34fb",
+      "hex": "000000786400ffff90a56480000001191701"
+    }
+  ]
+}

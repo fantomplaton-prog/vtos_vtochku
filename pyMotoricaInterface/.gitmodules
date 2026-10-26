@@ -1,0 +1,3 @@
+[submodule "Scripts/ubi4/main_ubi_sdk"]
+	path = Scripts/ubi4/main_ubi_sdk
+	url = ssh://git@gitea.motorica.tech:2222/UBI4/main_ubi_sdk.git

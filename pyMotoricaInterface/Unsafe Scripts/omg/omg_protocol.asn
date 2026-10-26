@@ -1,0 +1,75 @@
+MODULE DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+    DataType ::= ENUMERATED {
+        -- Целочисленные типы
+        int8(0),          -- 1 байт (-128..127)
+        int16(1),         -- 2 байта (-32768..32767)
+        int32(2),         -- 4 байта (-2147483648..2147483647)
+        int64(3),         -- 8 байт (-9223372036854775808..9223372036854775807)
+
+        uint8(4),         -- 1 байт (0..255)
+        uint16(5),        -- 2 байта (0..65535)
+        uint32(6),        -- 4 байта (0..4294967295)
+
+        -- Числа с плавающей точкой
+        float16(7),       -- 2 байта (половинная точность)
+        float32(8),       -- 4 байта (одинарная точность)
+        float64(9)        -- 8 байт (двойная точность)
+    }
+
+    max-omg INTEGER ::= 16
+    max-emg INTEGER ::= 8
+    max-bno-rpy INTEGER ::= 3
+    max-bno-acc INTEGER ::= 3
+    max-prb INTEGER ::= 10
+
+    max-omg-bin INTEGER ::= 64
+    max-emg-bin INTEGER ::= 32
+    max-bno-rpy-bin INTEGER ::= 12
+    max-bno-acc-bin INTEGER ::= 12
+    max-prb-bin INTEGER ::= 40
+    float-bin INTEGER ::= 4
+
+    Omg-State ::= SEQUENCE {
+        ts SEQUENCE {
+            dtype DataType,
+            ts-byte-array OCTET STRING (SIZE(float-bin))
+        },
+        td SEQUENCE {
+            dtype DataType,
+            td-byte-array OCTET STRING (SIZE(float-bin))
+        },
+        omg SEQUENCE {
+            dtype DataType,
+            values-count INTEGER,
+            omg-byte-array OCTET STRING (SIZE(max-omg-bin))
+        },
+        emg SEQUENCE {
+            dtype DataType,
+            values-count INTEGER,
+            emg-byte-array OCTET STRING (SIZE(max-emg-bin))
+        },
+        bno-rpy SEQUENCE {
+            dtype DataType,
+            values-count INTEGER,
+            bno-rpy-byte-array OCTET STRING (SIZE(max-bno-rpy-bin))
+        },
+        bno-acc SEQUENCE {
+            dtype DataType,
+            values-count INTEGER,
+            bno-acc-byte-array OCTET STRING (SIZE(max-bno-acc-bin))
+        },
+        prb SEQUENCE {
+            dtype DataType,
+            values-count INTEGER,
+            prb-byte-array OCTET STRING (SIZE(max-prb-bin))
+        },
+        argmax SEQUENCE {
+            dtype DataType,
+            argmax-byte-array OCTET STRING (SIZE(float-bin))
+        },
+        denoize SEQUENCE {
+            dtype DataType,
+            denoize-byte-array OCTET STRING (SIZE(float-bin))
+        }
+    }
+END
