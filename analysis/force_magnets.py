@@ -1,7 +1,7 @@
 """
 Сырые оси магнитометров в зависимости от силы сжатия протеза.
 
-Данные: tools/ramp_*.csv из force_ramp.py — несколько циклов, сила min → 100 % с шагом.
+Данные: tools/data/ramp_*.csv из force_ramp.py — несколько циклов, сила min → 100 % с шагом.
 Колонки: t_s, force_pct, THUMB_MLX0_X … MIDDLE_MLX3_Z (сырые int16, LSB).
 
 Метод: каждый цикл делится на ступени — подряд идущие кадры с одной силой (~0,5 с, ~30 кадров).
@@ -12,7 +12,7 @@
 
 Запуск (из папки analysis):
   uv run python force_magnets.py
-  uv run python force_magnets.py --file ../tools/ramp_XXXX.csv --no-show
+  uv run python force_magnets.py --file ../tools/data/ramp_XXXX.csv --no-show
 Сохраняет: <имя>_THUMB/INDEX/MIDDLE.png и <имя>_medians.csv рядом со скриптом.
 """
 import argparse
@@ -67,7 +67,7 @@ def step_medians(t, force, mag, cycle, contact_tail_s=0.5):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--file', default=str(HERE.parent / 'tools' / 'ramp_20261026_170237.csv'))
+    p.add_argument('--file', default=str(HERE.parent / 'tools' / 'data' / 'ramp_20261026_170237.csv'))
     p.add_argument('--contact-tail', type=float, default=0.5, help='с: хвост ступени контакта для медианы')
     p.add_argument('--no-show', action='store_true', help='только сохранить картинки, не показывать окна')
     a = p.parse_args()

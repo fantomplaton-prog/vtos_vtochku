@@ -1,6 +1,9 @@
 """
-Связь с платой TacMagVTOS: разбор кадров (Core/Inc/protocol.h) и транспорт — UART или BLE (HM-10).
-Используется calib_tool.py и raw_monitor.py.
+АРХИВ. Бинарный протокол платы датчиков TacMagVTOS (Core/Inc/protocol.h, protocol.c).
+Прошивка его СЕЙЧАС НЕ ОТПРАВЛЯЕТ: в main.c вызовы Protocol_Send() / Protocol_PollCommand()
+закомментированы, по UART идёт только текстовая строка FormatRawFrame (см. common/sensor_text.py).
+Чтобы вернуть: в main.c заменить FormatRawFrame + HAL_UART_Transmit на
+Protocol_PollCommand(); Protocol_Send(&calib, raw, closure);
 
 Кадры (little-endian, CRC-8 poly 0x07 по байтам 1..N-2):
   0xAA FingersFrame_t  10 байт   обычный режим, команда 'F'
@@ -110,64 +113,3 @@ class FrameParser:
         return ("axes", {"mask": mask, "mag": mag, "fsr": fsr})
 
 
-class SerialLink:
-    """USB-UART на линиях USART2 (вместо HM-10 или параллельно ему), 115200 бод."""
-
-    budget_bps = 8000   # полезных байт/с, с запасом от 11.5 КБ/с
-
-    def __init__(self, port, baud, on_data):
-        import serial
-        self.ser = serial.Serial(port, baud, timeout=0.05)
-        self.on_data = on_data
-        self.alive = True
-        threading.Thread(target=self._run, daemon=True).start()
-
-    def _run(self):
-        while self.alive:
-            data = self.ser.read(256)
-            if data:
-                self.on_data(data)
-
-    def write(self, data: bytes):
-        self.ser.write(data)
-
-    def close(self):
-        self.alive = False
-        self.ser.close()
-
-
-class BleLink:
-    """HM-10: сервис FFE0, характеристика FFE1 (notify + write)."""
-
-    budget_bps = 1000   # на практике через HM-10 + Windows доходило ~700-1500 байт/с
-
-    def __init__(self, target, on_data):
-        from bleak import BleakClient, BleakScanner
-        self.on_data = on_data
-        self.loop = asyncio.new_event_loop()
-        threading.Thread(target=self.loop.run_forever, daemon=True).start()
-
-        async def connect():
-            dev = await BleakScanner.find_device_by_filter(
-                lambda d, _: d.address.upper() == target.upper() or (d.name or "") == target,
-                timeout=10.0)
-            if dev is None:
-                raise RuntimeError(f"BLE-устройство '{target}' не найдено")
-            client = BleakClient(dev)
-            await client.connect()
-            await client.start_notify(HM10_CHAR, lambda _, d: self.on_data(bytes(d)))
-            return client
-
-        self.client = self._call(connect())
-
-    def _call(self, coro, timeout=20.0):
-        return asyncio.run_coroutine_threadsafe(coro, self.loop).result(timeout)
-
-    def write(self, data: bytes):
-        self._call(self.client.write_gatt_char(HM10_CHAR, data, response=False))
-
-    def close(self):
-        try:
-            self._call(self.client.disconnect())
-        finally:
-            self.loop.call_soon_threadsafe(self.loop.stop)
