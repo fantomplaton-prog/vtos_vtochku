@@ -4,9 +4,9 @@
 
   adc0 adc1 adc2 adc3 adc4 adc5 hall angle weight  THUMB_MLX0_X Y Z ... MIDDLE_MLX3_X Y Z
 
-  adc0..5, hall — целые (%lu); angle, weight — float (%.4f);
+  adc0..5, hall — целые (%lu); weight — float (%.4f);
   магнитометры — 3 ячейки × 4 MLX × 3 оси, целые со знаком (%d).
-Итого 45 чисел.
+Итого 43 чисел.
 
 Транспорт — SerialLink / BleLink из sensor_link.py (они отдают сырые байты).
 """
@@ -18,7 +18,7 @@ NUM_CELLS, NUM_MLX, AXES = 3, 4, 3
 CELLS = ['THUMB', 'INDEX', 'MIDDLE']
 AXIS_NAMES = ['X', 'Y', 'Z']
 MAG_COLS = [f'{c}_MLX{m}_{a}' for c in CELLS for m in range(NUM_MLX) for a in AXIS_NAMES]
-N_FIELDS = 6 + 1 + 2 + NUM_CELLS * NUM_MLX * AXES     # 45
+N_FIELDS = 6 + 1 + NUM_CELLS * NUM_MLX * AXES     # 43
 
 
 class TextFrameParser:
@@ -60,14 +60,13 @@ class TextFrameParser:
         if len(parts) != N_FIELDS:
             return None
         try:
-            adc = [int(x) for x in parts[0:6]]
-            hall = int(parts[6])
-            angle = float(parts[7])
-            weight = float(parts[8])
-            mag = [int(x) for x in parts[9:]]
+            adc = [int(x) for x in parts[0:5]]
+            hall = int(parts[5])
+            weight = float(parts[6])
+            mag = [int(x) for x in parts[7:]]
         except ValueError:
             return None
-        return {'adc': adc, 'hall': hall, 'angle': angle, 'weight': weight, 'mag': mag}
+        return {'adc': adc, 'hall': hall, 'weight': weight, 'mag': mag}
 
 
 class MockTextLink:
