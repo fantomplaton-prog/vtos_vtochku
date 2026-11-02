@@ -33,12 +33,33 @@
                           печатает время, реакцию и насколько сигнал вырос уже после стопа.
                           Кадры пишутся в tools/data/tm_<время>.csv.
   mthr <σ>                порог касания для tm, в единицах шума (сейчас 6)
+
+  Проскальзывание в прямом эфире (common/slip_live.py): по каждому пальцу r — РОСТ касательной
+  нагрузки |ΔG|/F (ΔG — сдвиг магнита от эталона хвата) над её минимумом с прошлого события; возврат
+  подушечки назад (отпустили) срабатываний не даёт. r > порога 2 кадра подряд — «СКОЛЬЖЕНИЕ»; конец —
+  нагрузка вернулась (r < 0.7·порога) или перестала меняться (~0.4 с) — тогда отсчёт от нового положения.
+  Если F пальца упала ниже 30 % от F хвата, палец выпадает из детекции; если так у всех — «ПРЕДМЕТ
+  ПОТЕРЯН», детектор выключается. Команды мотора (c, o, pc, po, t, tm, mcal) детектор выключают.
+  Значения пишутся в tools/data/slip_live_<время>.csv.
+  g [откат мс] [сила%]    сжать до касания: «закрыть» (сила 100 %) без ШИМ, при касании (как tm)
+                          сразу «открыть» на откат мс (30), стоп; через 0.5 с — эталон, детектор ВКЛ.
+                          Кисть перед g раскрыта и ничего не касается (снимается ноль).
+  sthr <r>                порог скольжения (сейчас 1.0)
+  sarm                    новый эталон в текущем положении (кисть неподвижно держит) и ВКЛ
+  sz                      ноль F и G (кисть раскрыта, ничего не касается) — g делает это сам
+  soff                    детектор выключить
+  s?                      текущие r и F по пальцам
+  Реакция на скольжение — дожим: при «СКОЛЬЖЕНИЕ» сразу «закрыть с силой 60 %» на 30 мс, стоп, если F
+  пальцев с контактом ещё ниже предела (сжатие не сильное); через 0.5 с — новый эталон, детектор ВКЛ.
+  sq on | sq off          дожим включить / выключить (сейчас ВКЛ)
+  sq <сила%> [мс]         сила и длительность дожима (60 %, 30 мс)
+  sqf <мкТл>              не дожимать, если F любого пальца с контактом ≥ этого (250 мкТл ≈ F при силе 78 %)
   q                       стоп и выход
 Время отсчитывается точно (до ~0.1 мс), но каждая команда мотору теряет ~20 мс на старт.
 
 Запуск (из папки tools/hand):
   py -3 hand_console.py                         # только кисть, COM20
-  py -3 hand_console.py --sensor-port COM21     # + вес после каждой команды, t, mcal, tm
+  py -3 hand_console.py --sensor-port COM21     # + вес, t, mcal, tm, проскальзывание (g, sthr, ...)
 Ctrl+C — стоп мотора.
 """
 import argparse
@@ -54,6 +75,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'common'))
 from hand_link import CMD_OPEN, CMD_STOP, HandUart, _sleep_until, cmd_close, pulse_close
 from mag_contact import CELLS, MagContact
+from slip_live import LiveSlip
 
 DATA = os.path.join(HERE, '..', 'data')
 CELL_KEYS = {'a': (0, 1, 2), 't': (0,), 'i': (1,), 'm': (2,)}
@@ -81,6 +103,35 @@ def main():
     mc = MagContact()
     hit = threading.Event()
     log = {'f': None, 'w': None, 'n': 0, 't0': time.time()}
+    slip = LiveSlip(thr=1.0)
+    # реакция на скольжение: дожать «закрыть с силой» на ms, если F пальцев ещё ниже fmax
+    sq = {'on': True, 'force': 60, 'ms': 30.0, 'fmax': 250.0, 'settle': 0.5, 'busy': False, 'n': 0}
+
+    def squeeze():
+        try:
+            with lock:
+                F_now = slip.F[slip.contact] if slip.contact.any() else slip.F[slip.valid]
+            if F_now.size and F_now.max() >= sq['fmax']:
+                print(f'  (сжатие уже сильное: F до {F_now.max():.0f} ≥ {sq["fmax"]:.0f} мкТл — не дожимаю)',
+                      flush=True)
+                return
+            with lock:
+                slip.disarm()                     # дожим сам меняет сигнал — детектор на паузе
+            t0 = time.perf_counter()
+            hand.send(cmd_close(sq['force']))
+            _sleep_until(t0 + sq['ms'] / 1000)
+            hand.send(CMD_STOP)
+            sq['n'] += 1
+            time.sleep(sq['settle'])
+            with lock:
+                Fh = slip.arm()                   # новый хват — новый эталон
+            print(f'  <<< ДОЖАЛ #{sq["n"]}: {sq["force"]}% на {sq["ms"]:.0f} мс; F хвата теперь '
+                  + ', '.join(f'{n} {v:.0f}' for n, v in zip(CELLS, Fh)) + ' мкТл, детектор снова ВКЛ', flush=True)
+        except Exception as e:                   # noqa: BLE001 — поток не должен падать молча
+            print(f'  ошибка дожима: {e}', flush=True)
+        finally:
+            sq['busy'] = False
+    slog = {'f': None, 'w': None}
     sensors = None
     if a.sensor_port:
         from sensor_link import SerialLink
@@ -97,6 +148,26 @@ def main():
                 if st['rec'] is not None:              # запись отрезка (калибровка mcal)
                     st['rec'].append(f['mag'])
                 tm = st['tm']
+                ev = slip.feed(f['mag'])               # детектор проскальзывания (если включён)
+                if slip.armed and slog['w']:
+                    slog['w'].writerow([f'{t_abs - log["t0"]:.4f}', int(slip.slipping)]
+                                       + [f'{v:.3f}' for v in slip.r] + [f'{v:.3f}' for v in slip.load]
+                                       + [f'{v:.1f}' for v in slip.F]
+                                       + [int(v) for v in slip.contact])
+            if ev:
+                if ev[0] == 'start':
+                    print(f'\n  >>> СКОЛЬЖЕНИЕ #{slip.n_events}: {ev[1]}, r = {ev[2]:.2f} '
+                          f'(порог {slip.thr:.2f})', flush=True)
+                    if sq['on'] and not sq['busy']:
+                        sq['busy'] = True
+                        threading.Thread(target=squeeze, daemon=True).start()
+                elif ev[0] == 'lost':
+                    print(f'\n  !!! ПРЕДМЕТ ПОТЕРЯН: F упала у {", ".join(ev[1])}'
+                          + (' (во время скольжения)' if ev[2] else '')
+                          + ' — детектор выключен; после нового хвата: g или sarm', flush=True)
+                else:
+                    print(f'\n  --- скольжение закончилось ({ev[1]:.2f} с' +
+                          (', предмет держится в новом положении — отсчёт от него)' if ev[2] else ')'), flush=True)
             if tm is None:
                 return
             # касание считается здесь, в потоке приёма, — без задержки опроса из главного потока
@@ -124,7 +195,7 @@ def main():
         print('ОШИБКА: протез не ответил за 8 с.')
         hand.close()
         return
-    print('Связь есть. Команды: c [мс] [сила%] | o [мс] | pc/po <мс> <окно мс> <доля%> [сила%] | t <скорость%> [сила%] | mcal | tm <скорость%> [сила%] [a/t/i/m] | s | f | z | w | thr | mthr | wait | q'
+    print('Связь есть. Команды: c [мс] [сила%] | o [мс] | pc/po <мс> <окно мс> <доля%> [сила%] | t <скорость%> [сила%] | mcal | tm <скорость%> [сила%] [a/t/i/m] | g [откат мс] | sthr | sarm | soff | s? | sq | sqf | s | f | z | w | thr | mthr | wait | q'
           '\n  (несколько через «;», help — подсказка)')
 
     def weight():
@@ -166,7 +237,13 @@ def main():
             return True
         c = parts[0].lower()
         numeric = {'emg': 0, 'tm': 2}.get(c, len(parts) - 1)   # у tm дальше буква пальца
+        if c == 'sq' and len(parts) > 1 and not parts[1].replace('.', '', 1).isdigit():
+            numeric = 0                                         # sq on / sq off
         args = [float(x) for x in parts[1:1 + numeric]]
+        if c in ('c', 'o', 'pc', 'po', 't', 'tm', 'mcal') and slip.armed:
+            # кисть сейчас поедет — сигнал магнитометров изменится сам: детектор выключаем
+            slip.disarm()
+            print('  (детектор скольжения выключен — команда мотора; после нового хвата: g или sarm)')
         if c in ('c', 'pc') and ((c == 'c' and len(args) >= 2) or (c == 'pc' and len(args) >= 4)):
             force = int(args[1] if c == 'c' else args[3])
         else:
@@ -202,6 +279,83 @@ def main():
         elif c == 'mthr':
             mc.thr = args[0]
             note = f'порог касания по магнитометрам {mc.thr:.1f} σ'
+        elif c == 'sq':
+            if len(parts) > 1 and parts[1].lower() in ('on', 'off'):
+                sq['on'] = parts[1].lower() == 'on'
+            elif args:
+                sq['force'] = max(1, min(100, int(args[0])))
+                if len(args) > 1:
+                    sq['ms'] = max(1.0, args[1])
+                sq['on'] = True
+            note = (f'дожим при скольжении {"ВКЛ" if sq["on"] else "выкл"}: {sq["force"]}% на {sq["ms"]:.0f} мс, '
+                    f'если F < {sq["fmax"]:.0f} мкТл; дожато раз: {sq["n"]}')
+        elif c == 'sqf':
+            sq['fmax'] = args[0]
+            note = f'дожимать, только пока F пальцев < {sq["fmax"]:.0f} мкТл'
+        elif c in ('g', 'sz', 'sarm', 'soff', 'sthr', 's?'):
+            if not sensors:
+                raise ValueError(f'{c}: нужны датчики — запустите с --sensor-port COM21')
+            if c == 'sthr':
+                slip.thr = args[0]
+                note = f'порог скольжения r = |ΔG|/F > {slip.thr:.2f}'
+            elif c == 'soff':
+                slip.disarm()
+                note = 'детектор скольжения выключен'
+            elif c == 's?':
+                note = ('детектор ' + ('ВКЛ' if slip.armed else 'выкл') + f', порог {slip.thr:.2f}; '
+                        + ', '.join(f'{n}: r {r:.2f}, F {F_:.0f}' + ('' if v else ' (нет контакта)')
+                                    for n, r, F_, v in zip(CELLS, slip.r, slip.F,
+                                                           slip.contact if slip.armed else slip.valid))
+                        + (f'; событий {slip.n_events}' if slip.n_events else ''))
+            elif c == 'sz':
+                slip.set_zero()
+                note = 'ноль F и G снят (кисть должна быть раскрыта и ничего не касаться)'
+            else:
+                if c == 'g':
+                    # сжать на максимальной скорости до касания (как tm), сразу приоткрыть, снять эталон
+                    retract = args[0] if args else 30.0
+                    force = int(args[1]) if len(args) > 1 else 100
+                    timeout = 5.0
+                    with lock:
+                        rest = list(st['m'][-30:])
+                    slip.set_zero()
+                    mc.set_sigma(rest)
+                    mc.start(rest[-5:])
+                    hit.clear()
+                    tm = {'no': 0, 'cells': (0, 1, 2), 't_hit': None, 'r_hit': None,
+                          'r_max': np.zeros(3), 'r_after': np.zeros(3)}
+                    with lock:
+                        st['tm'] = tm
+                    t0 = time.time()
+                    hand.send(cmd_close(force))
+                    _sleep_until(time.perf_counter() + timeout, hit.is_set)
+                    if hit.is_set() and retract > 0:
+                        hand.send(CMD_OPEN)
+                        _sleep_until(time.perf_counter() + retract / 1000)
+                    hand.send(CMD_STOP)
+                    t_stop = time.time()
+                    with lock:
+                        st['tm'] = None
+                    if tm['t_hit'] is None:
+                        note = f'касания нет за {timeout:.0f} с — детектор не включён'
+                        print('  ' + note)
+                        return True
+                    k = int(np.argmax(tm['r_hit']))
+                    print(f'  касание {CELLS[k]} через {tm["t_hit"] - t0:.2f} с, стоп через '
+                          f'{(t_stop - tm["t_hit"]) * 1000:.0f} мс (откат {retract:.0f} мс); жду 0.5 с...')
+                    time.sleep(0.5)
+                Fh = slip.arm()
+                if slog['f'] is None:
+                    path = os.path.join(DATA, f'slip_live_{time.strftime("%Y%m%d_%H%M%S")}.csv')
+                    slog['f'] = open(path, 'w', newline='', encoding='utf-8-sig')
+                    slog['w'] = csv.writer(slog['f'])
+                    slog['w'].writerow(['t_s', 'slip'] + [f'r_{n}' for n in CELLS] + [f'load_{n}' for n in CELLS]
+                                       + [f'F_{n}' for n in CELLS]
+                                       + [f'contact_{n}' for n in CELLS])
+                    print(f'  запись r и F: {path}')
+                note = ('детектор ВКЛ: F хвата ' + ', '.join(f'{n} {v:.0f}' + ('' if ok else ' (нет контакта)')
+                                                          for n, v, ok in zip(CELLS, Fh, slip.valid))
+                        + f' мкТл; порог r > {slip.thr:.2f}')
         elif c == 'mcal':
             if not sensors:
                 raise ValueError('mcal нужны датчики — запустите с --sensor-port COM21')
@@ -390,6 +544,8 @@ def main():
             sensors.close()
         if log['f']:
             log['f'].close()
+        if slog['f']:
+            slog['f'].close()
 
 
 if __name__ == '__main__':
